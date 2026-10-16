@@ -1,0 +1,17 @@
+# PostgreSQL local opcional: docker compose up -d db
+# Depois use DB_TYPE=postgres e DATABASE_URL=postgresql://reencontro:reencontro@localhost:5432/reencontro
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: reencontro, POSTGRES_PASSWORD: reencontro, POSTGRES_DB: reencontro }
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+  api:
+    build: .
+    profiles: ["full"]
+    env_file: .env
+    environment: { DB_TYPE: postgres, DATABASE_URL: "postgresql://reencontro:reencontro@db:5432/reencontro" }
+    ports: ["3000:3000"]
+    depends_on: [db]
+    volumes: [uploads:/app/uploads]
+volumes: { pgdata: {}, uploads: {} }
